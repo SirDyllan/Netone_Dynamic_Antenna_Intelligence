@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Setup, configuration, demo tower data, API, and Arduino notes for NetOne Dynamic Antenna Intelligence.">
+    <title>Project Documentation | NetOne Dynamic Antenna Intelligence</title>
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/style.css?v=gh-20261007-6">
+    <link rel="stylesheet" href="css/themes.css?v=gh-themes-4">
+</head>
+<body>
+<div class="app docs-app">
+    <header class="docs-header">
+        <div class="docs-brand-lockup">
+            <span class="team-logo-frame docs-logo-frame"><img class="team-logo" src="assets/greenhex-team-mark.png?v=2" width="64" height="64" alt="GreenHex Team emblem"></span>
+            <div>
+            <div class="eyebrow">NETONE • PROJECT REFERENCE</div>
+            <h1>System Documentation</h1>
+            <p>Configuration, simulation inputs, API routes, and hardware setup.</p>
+            </div>
+        </div>
+        <nav class="docs-nav" aria-label="Project navigation">
+            <a href="index.html">DASHBOARD</a>
+            <a href="https://www.tinkercad.com/things/1D8MHzs7QHV/editel" target="_blank" rel="noopener noreferrer">TINKERCAD TOWER CIRCUIT ↗</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="docs-intro panel">
+            <span class="section-tag">ACADEMIC PROTOTYPE</span>
+            <p class="notice">No physical components are required. The dashboard runs the autonomous decision loop; Tinkercad Circuits provides a separate virtual Uno-and-servo model. Synthetic demand and scores are not live NetOne measurements or a validated propagation model.</p>
+            <p>The decision engine forecasts a next demand window from simulated history, searches bounded antenna settings, and holds position when guardrails do not support an adjustment.</p>
+        </div>
+
+        <section class="docs-section" id="quickstart">
+            <span class="section-tag">01 / QUICK START</span>
+            <h2>Run the application</h2>
+            <ol>
+                <li>Install Python 3.10 or newer.</li>
+                <li>From the project root, run <code>py -m pip install -r requirements.txt</code>.</li>
+                <li>Run <code>start_demo.bat</code> or the PowerShell launcher <code>start_demo.ps1</code>.</li>
+                <li>Open <code>http://127.0.0.1:8000</code>. The API runs at <code>http://127.0.0.1:5001</code>.</li>
+            </ol>
+            <p>The backend entry point is <code>py backend/server.py</code>. The optimizer implementation is <code>ai/optimizer.py</code>; it is not a server entry point.</p>
+        </section>
+
+        <section class="docs-section" id="towers">
+            <span class="section-tag">02 / SITE SIMULATION</span>
+            <h2>Demo tower catalogue</h2>
+            <p>The dashboard site selector uses records from <code>data/network_towers.json</code>. Each site supplies a display name, city, illustrative service profile, and starting demand direction. Selecting a site changes the input sector sent to the same DynamicAntennaOptimizer; it does not switch to a different or live network service.</p>
+            <table class="docs-table">
+                <thead><tr><th>Demo site</th><th>City / region</th><th>Illustrative profile</th></tr></thead>
+                <tbody>
+                    <tr><td>Harare Central</td><td>Harare</td><td>Dense urban core</td></tr>
+                    <tr><td>Borrowdale Ridge</td><td>Harare</td><td>Residential and mixed use</td></tr>
+                    <tr><td>Southerton Industrial</td><td>Harare</td><td>Industrial demand pattern</td></tr>
+                    <tr><td>Chitungwiza Centre</td><td>Chitungwiza</td><td>High-density residential</td></tr>
+                    <tr><td>Bulawayo Central</td><td>Bulawayo</td><td>Urban commercial centre</td></tr>
+                    <tr><td>Mutare Gateway</td><td>Mutare</td><td>Urban and transport corridor</td></tr>
+                    <tr><td>Gweru Centre</td><td>Gweru</td><td>Regional urban centre</td></tr>
+                    <tr><td>Kwekwe Industrial</td><td>Kwekwe</td><td>Industrial and residential mix</td></tr>
+                    <tr><td>Masvingo Centre</td><td>Masvingo</td><td>Regional urban centre</td></tr>
+                    <tr><td>Chinhoyi Main</td><td>Chinhoyi</td><td>University and town centre</td></tr>
+                    <tr><td>Bindura Centre</td><td>Bindura</td><td>Town centre and commuter demand</td></tr>
+                    <tr><td>Victoria Falls Town</td><td>Victoria Falls</td><td>Tourism and town centre</td></tr>
+                </tbody>
+            </table>
+            <p>Each current scan contains 72 directional sectors at five-degree intervals and three synthetic prior windows. A damped per-sector trend estimates the next window. The engine searches azimuths from 0°–180° in five-degree steps and demo tilts of 3°, 6°, 9°, and 12°. It maximizes forecast demand-weighted coverage, limits each azimuth move to 45°, and prefers less movement on ties. It automatically holds if the simulated consistency indicator is below 65% or forecast gain is under 2 points. The consistency value is not a calibrated probability, and the score is not RF performance.</p>
+        </section>
+
+        <section class="docs-section" id="assistant">
+            <span class="section-tag">03 / LANGUAGE ASSISTANT</span>
+            <h2>Configure an OpenAI-compatible model</h2>
+            <p>The assistant explains scans and actions in the dashboard. With no model configured, it uses a clearly labeled local response mode. To enable generated responses, set these environment variables before starting the backend:</p>
+            <table class="docs-table">
+                <thead><tr><th>Variable</th><th>Purpose</th><th>Example format</th></tr></thead>
+                <tbody>
+                    <tr><td><code>NETONE_LLM_ENDPOINT</code></td><td>Full chat completions URL</td><td><code>https://provider.example/v1/chat/completions</code></td></tr>
+                    <tr><td><code>NETONE_LLM_MODEL</code></td><td>Model name accepted by that endpoint</td><td>Provider-specific</td></tr>
+                    <tr><td><code>NETONE_LLM_API_KEY</code></td><td>Optional bearer credential</td><td>Keep private; do not commit it</td></tr>
+                </tbody>
+            </table>
+            <pre><code>$env:NETONE_LLM_ENDPOINT = "https://your-provider/v1/chat/completions"
+$env:NETONE_LLM_MODEL = "your-model-name"
+$env:NETONE_LLM_API_KEY = "set-this-in-your-own-terminal"
+py backend/server.py</code></pre>
+            <p>Credentials are read by the backend and are not sent from the browser. The assistant endpoint is <code>POST /api/assistant</code>. Unset the variables to use the local assistant. Do not place a real key in this page, source control, or browser storage.</p>
+            <p>The dashboard can also speak assistant replies using the browser's speech synthesis when “Speak assistant updates aloud” is enabled.</p>
+        </section>
+
+        <section class="docs-section" id="hardware">
+            <span class="section-tag">04 / TINKERCAD DIGITAL TWIN</span>
+            <h2>Virtual circuit setup with no purchases</h2>
+            <p><a href="https://www.tinkercad.com/things/1D8MHzs7QHV/editel" target="_blank" rel="noopener noreferrer">Open the GreenHex virtual circuit in Tinkercad ↗</a>. Add virtual components from Tinkercad's library; do not buy an Arduino, servo, breadboard, or wires.</p>
+            <ol>
+                <li>Add an Arduino Uno R3 and one Micro Servo.</li>
+                <li>Connect the servo signal to D10, VCC to 5V, and GND to Arduino GND.</li>
+                <li>Open Code, choose Text, and load <code>hardware/arduino/antenna_controller.ino</code>.</li>
+                <li>Start Simulation. The virtual servo begins at 35°. Use the sketch's <code>DEMO</code> sequence to show several allowed angles.</li>
+                <li>Run the dashboard autonomous cycle. If the simulator accepts serial input, enter the displayed <code>SET AZIMUTH N</code> command to mirror the recommendation. Otherwise, narrate the target and run the virtual sweep as the actuator illustration.</li>
+            </ol>
+            <p>The web dashboard and hosted Tinkercad simulation are separate tools; this prototype does not remotely command the Tinkercad circuit. The dashboard demonstrates forecast, decision, guardrail, and score verification. Tinkercad demonstrates how the virtual actuator responds to valid azimuth commands.</p>
+            <p class="notice">This is an academic simulation. Do not present synthetic scores as measured RF results or as a live connection to a NetOne site.</p>
+        </section>
+
+        <section class="docs-section" id="api">
+            <span class="section-tag">05 / BACKEND API</span>
+            <h2>Routes used by the dashboard</h2>
+            <table class="docs-table">
+                <thead><tr><th>Method</th><th>Route</th><th>Purpose</th></tr></thead>
+                <tbody>
+                    <tr><td>GET</td><td><code>/api/health</code></td><td>Backend and hardware mode status</td></tr>
+                    <tr><td>GET</td><td><code>/api/state</code></td><td>Current simulated/controller state</td></tr>
+                    <tr><td>GET</td><td><code>/api/towers</code></td><td>Illustrative demo tower catalogue</td></tr>
+                    <tr><td>POST</td><td><code>/api/scan</code></td><td>Generate directional demand sectors</td></tr>
+                    <tr><td>POST</td><td><code>/api/analyse</code></td><td>Recommend azimuth and tilt</td></tr>
+                    <tr><td>POST</td><td><code>/api/optimise</code></td><td>Scan, optimize, and issue simulation/hardware command</td></tr>
+                    <tr><td>POST</td><td><code>/api/verify</code></td><td>Recompute illustrative score on the observed synthetic scan</td></tr>
+                    <tr><td>POST</td><td><code>/api/score</code></td><td>Score a constrained candidate setting against a supplied scan for baseline comparisons</td></tr>
+                    <tr><td>POST</td><td><code>/api/manual</code></td><td>Set bounded manual servo positions</td></tr>
+                    <tr><td>POST</td><td><code>/api/reset</code></td><td>Return the controller to baseline</td></tr>
+                    <tr><td>POST</td><td><code>/api/assistant</code></td><td>Contextual language assistant response</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="docs-section" id="files">
+            <span class="section-tag">06 / PROJECT FILES</span>
+            <h2>Configuration sources</h2>
+            <ul>
+                <li><code>data/network_towers.json</code>: illustrative tower directory and default demand directions.</li>
+                <li><code>data/demo_scenarios.json</code>: prepared demo scenario examples.</li>
+                <li><code>ai/optimizer.py</code>: demand generation and azimuth/tilt recommendation logic.</li>
+                <li><code>backend/server.py</code>: Flask routes, assistant provider integration, and serial bridge.</li>
+                <li><code>hardware/arduino/antenna_controller.ino</code>: Arduino serial command implementation.</li>
+                <li><code>hardware/tinkercad/TINKERCAD_SETUP.md</code>: expanded Tinkercad wiring and component guide.</li>
+                <li><code>hardware/tinkercad/tower_circuit.json</code>: machine-readable full tower parts list, pin connections, serial commands, and safety notes.</li>
+            </ul>
+        </section>
+    </main>
+    <footer>
+        <span>NetOne Dynamic Antenna Intelligence • Academic Prototype</span>
+        <span><a href="index.html">RETURN TO DASHBOARD</a></span>
+    </footer>
+</div>
+</body>
+</html>

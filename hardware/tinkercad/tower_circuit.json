@@ -1,0 +1,17 @@
+{
+  "project": "GreenHex NESARI 2026 - Tinkercad virtual actuator",
+  "mode": "virtual demonstration; no physical hardware purchases",
+  "dashboard_connection": "none; manually repeat the displayed target in Tinkercad if serial input is available",
+  "sketch": "hardware/arduino/antenna_controller.ino",
+  "components": [
+    { "ref": "U1", "type": "Arduino Uno R3", "quantity": 1, "virtual_only": true },
+    { "ref": "SV1", "type": "Micro Servo", "role": "azimuth demonstration", "quantity": 1, "virtual_only": true }
+  ],
+  "connections": [
+    { "from": "SV1.signal", "to": "U1.D10" },
+    { "from": "SV1.VCC", "to": "U1.5V" },
+    { "from": "SV1.GND", "to": "U1.GND" }
+  ],
+  "serial": { "baud": 9600, "commands": ["STATUS", "SET AZIMUTH <0-180>", "RESET", "DEMO"] },
+  "notes": ["The Tinkercad circuit runs separately from the dashboard.", "Use the dashboard animation as the primary autonomous-loop demonstration.", "All settings and scores are illustrative, not live NetOne data or measured RF."]
+}

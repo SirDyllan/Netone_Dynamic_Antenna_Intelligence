@@ -1,0 +1,13 @@
+{
+  "name": "NetOne Dynamic Antenna Intelligence",
+  "team": "GreenHex Team",
+  "event": "NESARI 2026",
+  "topic": "NetOne Topic 2",
+  "version": "1.1.0-demo",
+  "purpose": "Explainable forecast-aware antenna optimisation prototype",
+  "frontend_port": 8000,
+  "backend_port": 5001,
+  "hardware_default": "simulation",
+  "tinkercad_circuit": {"id": "1D8MHzs7QHV", "url": "https://www.tinkercad.com/things/1D8MHzs7QHV/editel", "status": "optional virtual actuator demo; dashboard is not directly connected"},
+  "main_flow": ["observe", "forecast", "decide_or_hold", "simulate", "verify"]
+}

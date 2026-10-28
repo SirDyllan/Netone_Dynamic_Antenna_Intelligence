@@ -1,0 +1,9 @@
+{
+  "model_name": "Dynamic Directional Demand Optimiser",
+  "version": "1.0-demo",
+  "training_data": "Synthetic directional demand data",
+  "input": "36 directional demand bins at 10 degree intervals",
+  "output": ["optimal_azimuth", "optimal_tilt"],
+  "production_status": "prototype",
+  "important_note": "Synthetic data must be replaced with validated, privacy-safe RF/network measurements for production."
+}

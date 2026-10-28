@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetOne Dynamic Antenna Intelligence</title>
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/style.css?v=gh-20261007-6">
+    <link rel="stylesheet" href="css/themes.css?v=gh-themes-4">
+</head>
+
+<body>
+<div class="app">
+
+    <header class="topbar">
+        <div class="brand-lockup">
+            <span class="team-logo-frame"><img class="team-logo" src="assets/greenhex-team-mark.png?v=2" width="86" height="86" alt="GreenHex Team emblem"></span>
+            <div>
+                <div class="eyebrow">GREENHEX TEAM · NESARI 2026</div>
+                <h1>Adaptive Antenna Intelligence</h1>
+                <p>Forecast demand · evaluate safe settings · explain every action</p>
+            </div>
+        </div>
+
+        <div class="status-pill" id="systemStatus">
+            <span class="dot"></span>
+            SYSTEM READY
+        </div>
+        <nav class="topbar-links" aria-label="Project links">
+            <div class="theme-switch" role="group" aria-label="Colour theme">
+                <button type="button" data-theme-btn="signal"><i></i>SIGNAL</button>
+                <button type="button" data-theme-btn="crimson"><i></i>CRIMSON</button>
+                <button type="button" data-theme-btn="midnight"><i></i>MIDNIGHT</button>
+            </div>
+            <a href="docs.html">PROJECT DOCUMENTATION</a>
+            <a href="https://www.tinkercad.com/things/1D8MHzs7QHV/editel" target="_blank" rel="noopener noreferrer">OPEN VIRTUAL TINKERCAD CIRCUIT ↗</a>
+        </nav>
+    </header>
+
+        <div class="backup-banner" id="backupBanner" role="status" hidden>
+            <strong>BACKUP MODE</strong>
+            <span>The backend is offline, so this is a recorded session, not live computation. Numbers are real outputs saved from the engine.</span>
+            <button type="button" class="secondary" id="retryLiveBtn">RETRY LIVE</button>
+        </div>
+
+    <main>
+
+        <!-- Core flow -->
+        <section class="flow-card" aria-label="Process stages">
+            <button type="button" class="flow-step active viewing" id="flow1" data-go="1" title="Scan simulated demand"><strong>01</strong><span>OBSERVE</span></button>
+            <div class="arrow">→</div>
+            <button type="button" class="flow-step" id="flow2" data-go="2" title="Predict next window"><strong>02</strong><span>FORECAST</span></button>
+            <div class="arrow">→</div>
+            <button type="button" class="flow-step" id="flow3" data-go="3" title="Pick a safe setting"><strong>03</strong><span>DECIDE</span></button>
+            <div class="arrow">→</div>
+            <button type="button" class="flow-step" id="flow4" data-go="4" title="Move virtual antenna"><strong>04</strong><span>SIMULATE</span></button>
+            <div class="arrow">→</div>
+            <button type="button" class="flow-step" id="flow5" data-go="5" title="Re-score same demand"><strong>05</strong><span>VERIFY</span></button>
+        </section>
+
+        <section class="view-bar">
+            <p class="stage-hint" id="stageHint"></p>
+            <div class="view-actions">
+                <button type="button" class="secondary" id="prevStep">← BACK</button>
+                <button type="button" class="secondary" id="nextStep">NEXT →</button>
+                <button type="button" class="success" id="runCycleBtn">▶ RUN AUTONOMOUS CYCLE</button>
+                <label class="auto-toggle"><input type="checkbox" id="autoToggle"> AUTO (15 s)</label>
+                <button type="button" class="secondary" id="viewToggle">VIEW: GUIDED</button>
+            </div>
+        </section>
+
+        <section class="dashboard-grid">
+
+            <!-- Demand -->
+            <article class="panel demand-panel" data-step="1">
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-tag">ENVIRONMENT</span>
+                        <h2>Dynamic User Demand</h2>
+                    </div>
+                    <span class="live-tag"><i class="live-dot"></i> LIVE · SIMULATED INPUTS</span>
+                </div>
+
+                <label class="tower-picker" for="towerSelect">
+                    <span>DEMO NETWORK SITE</span>
+                    <select id="towerSelect" aria-describedby="towerNotice">
+                        <option value="">Loading demo sites...</option>
+                    </select>
+                    <small id="towerNotice">Illustrative sites for simulation; not verified live NetOne inventory.</small>
+                </label>
+                <div class="site-card" id="siteCard"></div>
+                <label class="tower-picker pattern-picker" for="patternSelect">
+                    <span>DEMAND BEHAVIOUR</span>
+                    <select id="patternSelect">
+                        <option value="auto">Site default</option>
+                        <option value="steady">Steady: users stay put</option>
+                        <option value="drifting">Drifting: crowd moves steadily</option>
+                        <option value="erratic">Erratic: unpredictable jumps</option>
+                    </select>
+                </label>
+
+                <div class="radar" id="radar">
+                    <div class="arc"></div>
+                    <div class="pulse p1"></div><div class="pulse p2"></div>
+                    <div class="sweep"></div>
+                    <div class="ring ring1"></div>
+                    <div class="ring ring2"></div>
+                    <div class="ring ring3"></div>
+                    <div class="cross vertical"></div>
+                    <div class="cross horizontal"></div>
+                    <div id="towerDot" class="tower-dot">T<i class="beacon"></i></div>
+                    <div id="demandPoints"></div>
+                    <div id="targetBeam" class="target-beam"></div>
+                    <div id="currentBeam" class="beam current-beam"></div>
+                </div>
+
+                <div class="legend">
+                    <span><i class="lg-beam"></i> ANTENNA</span>
+                    <span><i class="lg-peak"></i> PEAK</span>
+                    <span><i class="low"></i> LOW <b id="lowCount">0</b></span>
+                    <span><i class="medium"></i> MID <b id="mediumCount">0</b></span>
+                    <span><i class="high"></i> HIGH <b id="highCount">0</b></span>
+                </div>
+
+                <p class="metric-note" id="arcNote">Shaded half = antenna's steerable 0°–180° arc. Demand outside it (faded) cannot be served.</p>
+
+                <div class="demand-stats">
+                    <div>
+                        <span>DOMINANT SECTOR</span>
+                        <strong id="dominantSector">—</strong>
+                    </div>
+                    <div>
+                        <span>DEMAND SCORE</span>
+                        <strong id="demandScore">—</strong>
+                    </div>
+                    <div>
+                        <span>DEMAND PEAK</span>
+                        <strong id="signalScore">—</strong>
+                    </div>
+                </div>
+
+                <p class="live-line" id="liveLine" aria-live="polite"><i class="live-dot"></i><span>Ready. Press SCAN ENVIRONMENT.</span></p>
+
+                <div class="button-row">
+                    <button class="secondary" id="changeDemandBtn">
+                        CHANGE USER DEMAND
+                    </button>
+                    <button class="primary" id="scanBtn">
+                        SCAN ENVIRONMENT
+                    </button>
+                </div>
+            </article>
+
+            <!-- AI -->
+            <article class="panel ai-panel" data-step="2 3">
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-tag">INTELLIGENCE</span>
+                        <h2>Autonomous Decision Engine</h2>
+                    </div>
+                    <span class="ai-badge">FORECAST + SEARCH</span>
+                </div>
+
+                <div class="recommendation-box">
+                    <div class="rec-label" id="curLabel">CURRENT POSITION</div>
+                    <div class="big-values">
+                        <div>
+                            <span>AZIMUTH</span>
+                            <strong id="currentAzimuth">35°</strong>
+                        </div>
+                        <div>
+                            <span>TILT</span>
+                            <strong id="currentTilt">3°</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <div class="recommendation-box recommended">
+                    <div class="rec-label">RECOMMENDED SETTING</div>
+                    <div class="big-values">
+                        <div>
+                            <span>AZIMUTH</span>
+                            <strong id="targetAzimuth">—</strong>
+                        </div>
+                        <div>
+                            <span>TILT</span>
+                            <strong id="targetTilt">—</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reason" id="reason">
+                    Run a scan to forecast demand and evaluate safe settings.
+                </div>
+
+                <div class="automation-readout">
+                    <div><span>FORECAST PEAK</span><strong id="forecastPeak">—</strong></div>
+                    <div><span>CONSISTENCY</span><strong id="forecastConfidence">—</strong></div>
+                    <div><span>DECISION</span><strong id="decisionStatus">WAITING</strong></div>
+                </div>
+                <p class="metric-note">Trend forecast + bounded search + hold guardrails. Confidence is a simulated consistency indicator, not a probability.</p>
+
+                <div class="score-comparison" aria-live="polite">
+                    <div><span>BASELINE SCORE</span><strong id="baselineScore">—</strong></div>
+                    <div><span>RECOMMENDED</span><strong id="predictedScore">—</strong></div>
+                    <div><span>MOVEMENT</span><strong id="movementCost">—</strong></div>
+                </div>
+                <p class="metric-note">Illustrative demand-weighted coverage model. Scores are simulated, not measured RF.</p>
+
+                <button class="success full" id="optimiseBtn">
+                    ▶ RUN AUTONOMOUS CYCLE
+                </button>
+                <button class="secondary full" id="analyseBtn">PREVIEW DECISION</button>
+            </article>
+
+            <!-- Antenna model -->
+            <article class="panel antenna-panel" data-step="4">
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-tag">VIRTUAL ACTUATOR</span>
+                        <h2>Tinkercad Digital Twin</h2>
+                    </div>
+                    <span id="hardwareBadge" class="hardware-badge">VIRTUAL MODE</span>
+                </div>
+
+                <div class="antenna-stage">
+                    <div id="coverageCone" class="coverage-cone"></div>
+
+                    <div class="tower-model">
+                        <div class="mast"></div>
+                        <div class="mast-inner"></div>
+                        <div class="support support-left"></div>
+                        <div class="support support-right"></div>
+                        <div class="cross-brace brace-one"></div>
+                        <div class="cross-brace brace-two"></div>
+                        <div class="cross-brace brace-three"></div>
+                        <div class="platform platform-top"></div>
+                        <div class="platform platform-mid"></div>
+                        <div class="warning-light"></div>
+                        <div class="mount-arm"></div>
+
+                        <div id="antennaHead" class="antenna-head">
+                            <div class="antenna-backplate"></div>
+                            <div class="antenna-panel-shape"></div>
+                            <div class="antenna-feed"></div>
+                        </div>
+                        <div class="tower-foundation"></div>
+                    </div>
+                </div>
+
+                <a class="circuit-link" href="https://www.tinkercad.com/things/1D8MHzs7QHV/editel" target="_blank" rel="noopener noreferrer">
+                    OPEN TINKERCAD VIRTUAL CIRCUIT ↗
+                </a>
+                <p class="circuit-note">Tinkercad’s virtual Uno and servo demonstrate actuation. The optimizer runs in this dashboard; Tinkercad is a separate virtual circuit, not a live-connected controller. <a href="docs.html#hardware">Open the no-purchase demo guide.</a></p>
+
+                <div class="mechanical-values">
+                    <div>
+                        <span>VIRTUAL AZIMUTH</span>
+                        <strong id="servoAzimuth">35°</strong>
+                    </div>
+                    <div>
+                        <span>VIRTUAL TILT</span>
+                        <strong id="servoTilt">3°</strong>
+                    </div>
+                    <div>
+                        <span>MODE</span>
+                        <strong id="controllerMode">SIMULATION</strong>
+                    </div>
+                </div>
+
+                <div class="tinkercad-command"><span>VIRTUAL ACTUATOR TARGET</span><code id="tinkercadCommand">Waiting for recommendation</code><button type="button" class="copy-cmd" id="copyCmdBtn" title="Copy the command, then paste it into the Tinkercad Serial Monitor">COPY</button></div>
+
+                <div class="movement-bar">
+                    <div id="movementFill"></div>
+                </div>
+                <div class="movement-label" id="movementLabel">READY</div>
+            </article>
+
+            <!-- Verification -->
+            <article class="panel verify-panel" data-step="5">
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-tag">FEEDBACK LOOP</span>
+                        <h2>Outcome Check</h2>
+                    </div>
+                </div>
+
+                <div class="verification-circle">
+                    <span id="verifyScore">—</span>
+                    <small>SIMULATED COVERAGE</small>
+                </div>
+
+                <div class="metric-grid">
+                    <div><span>DEMAND IN BEAM</span><strong id="mBeam">—</strong></div>
+                    <div><span>MOVES</span><strong id="mMoves">0</strong></div>
+                    <div><span>DEGREES TRAVELLED</span><strong id="mDegrees">0°</strong></div>
+                    <div><span>HOLDS / DECISIONS</span><strong id="mHolds">0 / 0</strong></div>
+                </div>
+                <p class="metric-note">Demand in beam is a throughput proxy (share of demand inside the beam's half-gain zone), not Mbps. Moves and degrees show equipment wear.</p>
+
+                <div class="verify-text" id="verifyText">
+                    Apply a recommendation to compare the same demand profile before and after.
+                </div>
+
+                <button class="primary full" id="verifyBtn">
+                    VERIFY NEW POSITION
+                </button>
+
+                <div class="loop-message">
+                    <strong>Trust guardrails:</strong>
+                    low confidence or small forecast gain produces HOLD. All scores are simulated.
+                </div>
+            </article>
+
+            <!-- Full demo -->
+            <article class="panel full-panel" data-step="5">
+                <div class="full-demo-copy">
+                    <span class="section-tag">PRESENTATION MODE</span>
+                    <h2>Run a Fair Strategy Comparison</h2>
+                    <p>
+                        Compare fixed, busiest-direction, and forecast-aware decisions on the same reproducible demand profile.
+                    </p>
+                </div>
+                <button class="demo-button" id="fullDemoBtn">
+                    ▶ COMPARE STRATEGIES
+                </button>
+                <button class="secondary" id="resetBtn">RESET SYSTEM</button>
+                <div id="compareBars" class="compare-bars"></div>
+            </article>
+
+            <!-- 24-hour simulation -->
+            <article class="panel full-panel day-panel" data-step="5">
+                <div class="full-demo-copy">
+                    <span class="section-tag">24-HOUR SIMULATION</span>
+                    <h2>Does adapting pay off over a day?</h2>
+                    <p>Demand moves through the day. The adaptive engine decides every hour and is scored on the next hour, which it never saw. It is compared with the best possible fixed setting (picked with hindsight) and the installed setting.</p>
+                </div>
+                <button class="demo-button" id="daySimBtn">▶ RUN 24-HOUR SIMULATION</button>
+                <div id="dayChart" class="day-chart"></div>
+                <div id="daySummary" class="day-summary"></div>
+            </article>
+
+            <!-- Event log -->
+            <article class="panel full-panel" data-step="5">
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-tag">SYSTEM</span>
+                        <h2>Event Log</h2>
+                    </div>
+                </div>
+                <button class="secondary" id="exportAuditBtn" type="button">⬇ EXPORT AUDIT LOG (0)</button>
+                <div class="log" id="eventLog"></div>
+            </article>
+
+        </section>
+
+        <section class="assistant-panel panel" data-step="5" aria-labelledby="assistantHeading">
+            <div class="panel-heading">
+                <div>
+                    <span class="section-tag">SYSTEM GUIDE</span>
+                    <h2 id="assistantHeading">Operator Explanation</h2>
+                </div>
+                <span class="ai-badge" id="assistantMode">OPTIONAL TEXT ASSISTANT</span>
+            </div>
+            <div class="assistant-messages" id="assistantMessages" aria-live="polite">
+                <p class="assistant-message assistant-response">The decision engine works without a cloud model. This optional panel explains the latest forecast, guardrail, and recommendation.</p>
+            </div>
+            <form class="assistant-form" id="assistantForm">
+                <label class="sr-only" for="assistantInput">Ask about this demo</label>
+                <input id="assistantInput" type="text" maxlength="1200" placeholder="Ask about a tower, scan, or recommendation..." autocomplete="off">
+                <button class="primary" type="submit">ASK</button>
+            </form>
+            <label class="voice-setting"><input id="voiceToggle" type="checkbox"> Speak assistant updates aloud</label>
+        </section>
+    </main>
+
+    <footer>
+        <span>NetOne Dynamic Antenna Intelligence • Academic Prototype</span>
+        <span>DETECT → ANALYSE → OPTIMISE → MOVE → VERIFY → REPEAT</span>
+    </footer>
+</div>
+
+<script src="js/app.js?v=gh-20261007-6"></script>
+</body>
+</html>

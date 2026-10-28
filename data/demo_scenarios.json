@@ -1,0 +1,24 @@
+{
+  "scenarios": [
+    {
+      "name": "Morning demand",
+      "preferred_sector": 120,
+      "description": "High simulated demand toward one sector."
+    },
+    {
+      "name": "Afternoon shift",
+      "preferred_sector": 250,
+      "description": "Demand shifts to another direction."
+    },
+    {
+      "name": "Evening shift",
+      "preferred_sector": 35,
+      "description": "Demand returns toward the original side."
+    },
+    {
+      "name": "Alternative sector",
+      "preferred_sector": 290,
+      "description": "Another dynamic demand configuration."
+    }
+  ]
+}

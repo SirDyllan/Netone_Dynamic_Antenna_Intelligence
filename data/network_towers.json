@@ -1,0 +1,134 @@
+[
+ {
+  "id": "DEMO-HRE-01",
+  "name": "Harare Central",
+  "city": "Harare",
+  "region": "Harare Province",
+  "sector": 100,
+  "profile": "Dense urban core",
+  "peak_compass": 120,
+  "heading": 20,
+  "pattern": "steady"
+ },
+ {
+  "id": "DEMO-HRE-02",
+  "name": "Borrowdale Ridge",
+  "city": "Harare",
+  "region": "Harare Province",
+  "sector": 60,
+  "profile": "Residential and mixed use",
+  "peak_compass": 35,
+  "heading": 335,
+  "pattern": "drifting"
+ },
+ {
+  "id": "DEMO-HRE-03",
+  "name": "Southerton Industrial",
+  "city": "Harare",
+  "region": "Harare Province",
+  "sector": 120,
+  "profile": "Industrial demand pattern",
+  "peak_compass": 250,
+  "heading": 130,
+  "pattern": "erratic"
+ },
+ {
+  "id": "DEMO-CHT-01",
+  "name": "Chitungwiza Centre",
+  "city": "Chitungwiza",
+  "region": "Harare Province",
+  "sector": 80,
+  "profile": "High-density residential",
+  "peak_compass": 205,
+  "heading": 125,
+  "pattern": "drifting"
+ },
+ {
+  "id": "DEMO-BYO-01",
+  "name": "Bulawayo Central",
+  "city": "Bulawayo",
+  "region": "Bulawayo Province",
+  "sector": 140,
+  "profile": "Urban commercial centre",
+  "peak_compass": 80,
+  "heading": 300,
+  "pattern": "steady"
+ },
+ {
+  "id": "DEMO-MUT-01",
+  "name": "Mutare Gateway",
+  "city": "Mutare",
+  "region": "Manicaland",
+  "sector": 50,
+  "profile": "Urban and transport corridor",
+  "peak_compass": 155,
+  "heading": 105,
+  "pattern": "drifting"
+ },
+ {
+  "id": "DEMO-GWE-01",
+  "name": "Gweru Centre",
+  "city": "Gweru",
+  "region": "Midlands",
+  "sector": 110,
+  "profile": "Regional urban centre",
+  "peak_compass": 290,
+  "heading": 180,
+  "pattern": "steady"
+ },
+ {
+  "id": "DEMO-KWE-01",
+  "name": "Kwekwe Industrial",
+  "city": "Kwekwe",
+  "region": "Midlands",
+  "sector": 70,
+  "profile": "Industrial and residential mix",
+  "peak_compass": 330,
+  "heading": 260,
+  "pattern": "erratic"
+ },
+ {
+  "id": "DEMO-MAS-01",
+  "name": "Masvingo Centre",
+  "city": "Masvingo",
+  "region": "Masvingo",
+  "sector": 130,
+  "profile": "Regional urban centre",
+  "peak_compass": 35,
+  "heading": 265,
+  "pattern": "steady"
+ },
+ {
+  "id": "DEMO-CHI-01",
+  "name": "Chinhoyi Main",
+  "city": "Chinhoyi",
+  "region": "Mashonaland West",
+  "sector": 110,
+  "profile": "University and town centre",
+  "peak_compass": 120,
+  "heading": 10,
+  "pattern": "drifting"
+ },
+ {
+  "id": "DEMO-BIN-01",
+  "name": "Bindura Centre",
+  "city": "Bindura",
+  "region": "Mashonaland Central",
+  "sector": 45,
+  "profile": "Town centre and commuter demand",
+  "peak_compass": 250,
+  "heading": 205,
+  "pattern": "steady"
+ },
+ {
+  "id": "DEMO-VFA-01",
+  "name": "Victoria Falls Town",
+  "city": "Victoria Falls",
+  "region": "Matabeleland North",
+  "sector": 100,
+  "profile": "Tourism and town centre",
+  "peak_compass": 205,
+  "heading": 105,
+  "pattern": "steady"
+ }
+]
