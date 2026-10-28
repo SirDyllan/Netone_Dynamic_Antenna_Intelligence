@@ -1,0 +1,7 @@
+# Deploy only the static frontend to Vercel.
+# Ignore everything, then re-include the frontend and the Vercel config.
+# This prevents Vercel from auto-detecting the Flask backend
+# (backend/server.py + requirements.txt) and trying to build it.
+/*
+!/frontend
+!/vercel.json
